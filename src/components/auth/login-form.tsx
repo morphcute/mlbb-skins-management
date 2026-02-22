@@ -44,13 +44,13 @@ export function LoginForm() {
   };
 
   return (
-    <Card className="w-full max-w-md rounded-[28px] glass-card">
+    <Card className="w-full max-w-md rounded-[28px] glass-card" suppressHydrationWarning>
       <CardHeader>
         <div className="mb-1 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-primary to-primary-strong text-white shadow-md">
           <ShieldCheck className="h-5 w-5" />
         </div>
         <CardTitle className="text-2xl">Sign in</CardTitle>
-        <CardDescription>Access MLBB Diamond Manager with your assigned account.</CardDescription>
+        <CardDescription>Access MLBB Skins Manager with your assigned account.</CardDescription>
       </CardHeader>
       <CardContent>
         <form className="space-y-4" onSubmit={handleSubmit}>
