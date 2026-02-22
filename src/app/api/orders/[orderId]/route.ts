@@ -121,6 +121,7 @@ export async function PATCH(
     supplierId: parsed.data.supplierId,
     readyForGifting: parsed.data.readyForGifting,
     notes: parsed.data.notes,
+    releaseDate: parsed.data.releaseDate,
   });
 
   try {

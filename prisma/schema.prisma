@@ -68,6 +68,7 @@ model Order {
   assignedBy          User         @relation("OrderAssignedBy", fields: [assignedById], references: [id], onDelete: Restrict)
   completedAt         DateTime?    @map("completed_at")
   followedAt          DateTime?    @map("followed_at")
+  releaseDate         DateTime?    @map("release_date")
   balanceDeductedAt   DateTime?    @map("balance_deducted_at")
   googleSheetRowNumber Int?        @map("google_sheet_row_number")
   notes               String?

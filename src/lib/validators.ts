@@ -16,6 +16,7 @@ export const createOrderSchema = z.object({
   supplierId: z.string().min(1),
   status: z.enum(ORDER_STATUS_VALUES).default("PENDING"),
   notes: z.string().optional(),
+  releaseDate: z.coerce.date().optional(),
 });
 
 export const updateOrderSchema = z.object({
@@ -23,6 +24,7 @@ export const updateOrderSchema = z.object({
   supplierId: z.string().optional(),
   readyForGifting: z.boolean().optional(),
   notes: z.string().optional(),
+  releaseDate: z.coerce.date().optional(),
 });
 
 export const createSupplierSchema = z.object({

@@ -21,7 +21,7 @@ import { Select } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useLiveQuery } from "@/hooks/use-live-query";
 import { ORDER_STATUS_OPTIONS, type OrderStatusValue } from "@/lib/constants";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatDateOnly } from "@/lib/utils";
 
 type SupplierOption = {
   id: string;
@@ -45,6 +45,7 @@ type OrderRecord = {
   readyForGifting: boolean;
   createdAt: string;
   followedAt: string | null;
+  releaseDate: string | null;
   notes: string | null;
   supplier: {
     name: string;
@@ -89,6 +90,7 @@ export function AdminOrdersClient() {
   const [skinName, setSkinName] = useState("");
   const [diamondPrice, setDiamondPrice] = useState("0");
   const [selectedSupplierId, setSelectedSupplierId] = useState("");
+  const [releaseDate, setReleaseDate] = useState("");
   const [notes, setNotes] = useState("");
   const [refundOrderId, setRefundOrderId] = useState<string | null>(null);
   const [deleteOrderId, setDeleteOrderId] = useState<string | null>(null);
@@ -179,6 +181,7 @@ export function AdminOrdersClient() {
     setSkinName("");
     setDiamondPrice("0");
     setSelectedSupplierId("");
+    setReleaseDate("");
     setNotes("");
     setErrorMessage(null);
   };
@@ -204,6 +207,7 @@ export function AdminOrdersClient() {
           diamondPrice: Number(diamondPrice),
           supplierId: selectedSupplierId,
           status: "PENDING",
+          releaseDate: releaseDate || undefined,
           notes,
         }),
       });
@@ -336,7 +340,17 @@ export function AdminOrdersClient() {
                   ))}
                 </Select>
               </div>
-              <div className="space-y-1 sm:col-span-2">
+              <div className="space-y-1 sm:col-span-2 lg:col-span-1">
+                <Label htmlFor="releaseDate">Release Date</Label>
+                <Input
+                  id="releaseDate"
+                  type="date"
+                  value={releaseDate}
+                  onChange={(e) => setReleaseDate(e.target.value)}
+                  className="h-9"
+                />
+              </div>
+              <div className="space-y-1 sm:col-span-2 lg:col-span-2">
                 <Label htmlFor="notes">Notes (Optional)</Label>
                 <Input
                   id="notes"
@@ -487,6 +501,12 @@ export function AdminOrdersClient() {
                           )}
                         </p>
                       </div>
+                      {order.releaseDate && (
+                        <div>
+                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Release Date</p>
+                          <p className="font-medium text-foreground" suppressHydrationWarning>{formatDateOnly(order.releaseDate)}</p>
+                        </div>
+                      )}
                       <div className="col-span-2 flex justify-between items-center">
                         <div>
                           <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Date</p>
@@ -529,6 +549,7 @@ export function AdminOrdersClient() {
                       <TableHead>Price</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Ready / Followed</TableHead>
+                      <TableHead>Release Date</TableHead>
                       <TableHead>Date</TableHead>
                       <TableHead className="w-20">Action</TableHead>
                     </TableRow>
@@ -577,6 +598,7 @@ export function AdminOrdersClient() {
                             <span className="text-muted-foreground text-sm">-</span>
                           )}
                         </TableCell>
+                        <TableCell suppressHydrationWarning>{order.releaseDate ? formatDateOnly(order.releaseDate) : "-"}</TableCell>
                         <TableCell suppressHydrationWarning>{formatDate(order.createdAt)}</TableCell>
                         <TableCell className="flex items-center gap-1">
                           <Button 

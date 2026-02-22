@@ -8,6 +8,7 @@ type UpdateOrderParams = {
   supplierId?: string;
   readyForGifting?: boolean;
   notes?: string;
+  releaseDate?: Date;
 };
 
 export async function updateOrderWithBalanceEffects(params: UpdateOrderParams) {
@@ -39,6 +40,7 @@ export async function updateOrderWithBalanceEffects(params: UpdateOrderParams) {
       supplier: isSupplierChanging ? { connect: { id: targetSupplierId } } : undefined,
       readyForGifting: nextReadyFlag,
       notes: params.notes ?? order.notes,
+      releaseDate: params.releaseDate,
     };
 
     const now = new Date();

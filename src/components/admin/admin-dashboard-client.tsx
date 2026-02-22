@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useLiveQuery } from "@/hooks/use-live-query";
 import { HEALTH_STATE, getBalanceHealthState } from "@/lib/constants";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatDateOnly } from "@/lib/utils";
 
 type DashboardSupplier = {
   id: string;
@@ -27,6 +27,7 @@ type DashboardOrder = {
   diamondPrice: number;
   status: string;
   createdAt: string;
+  releaseDate: string | null;
   supplier: {
     name: string;
   };
@@ -237,6 +238,12 @@ export function AdminDashboardClient() {
                      <p className="text-xs uppercase tracking-wider text-muted-foreground">Date</p>
                      <p className="font-medium text-foreground" suppressHydrationWarning>{formatDate(order.createdAt)}</p>
                    </div>
+                   {order.releaseDate && (
+                     <div className="col-span-2">
+                       <p className="text-xs uppercase tracking-wider text-muted-foreground">Release Date</p>
+                       <p className="font-medium text-foreground" suppressHydrationWarning>{formatDateOnly(order.releaseDate)}</p>
+                     </div>
+                   )}
                 </div>
               </div>
             ))}
@@ -269,6 +276,7 @@ export function AdminDashboardClient() {
                         {order.status.replaceAll("_", " ")}
                       </Badge>
                     </TableCell>
+                    <TableCell suppressHydrationWarning>{order.releaseDate ? formatDateOnly(order.releaseDate) : "-"}</TableCell>
                     <TableCell suppressHydrationWarning>{formatDate(order.createdAt)}</TableCell>
                   </TableRow>
                 ))}

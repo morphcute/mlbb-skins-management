@@ -157,6 +157,7 @@ export async function POST(request: NextRequest) {
           status: parsed.data.status,
           readyForGifting: parsed.data.status === OrderStatus.READY_FOR_GIFTING || shouldComplete,
           notes: parsed.data.notes,
+          releaseDate: parsed.data.releaseDate,
           completedAt: shouldComplete ? now : null,
           balanceDeductedAt: shouldComplete ? now : null,
         },

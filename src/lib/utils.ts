@@ -15,6 +15,15 @@ export function formatDate(value: Date | string | null | undefined) {
   return format(date, "MMM d, yyyy h:mm a");
 }
 
+export function formatDateOnly(value: Date | string | null | undefined) {
+  if (!value) {
+    return "-";
+  }
+
+  const date = typeof value === "string" ? new Date(value) : value;
+  return format(date, "MMM d, yyyy");
+}
+
 export function toTitleCase(value: string) {
   return value
     .toLowerCase()

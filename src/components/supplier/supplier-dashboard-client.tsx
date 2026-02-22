@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select } from "@/components/ui/select";
 import { useLiveQuery } from "@/hooks/use-live-query";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatDateOnly } from "@/lib/utils";
 
 type SupplierResponse = {
   suppliers: Array<{
@@ -32,6 +32,7 @@ type SupplierOrder = {
   readyForGifting: boolean;
   createdAt: string;
   followedAt: string | null;
+  releaseDate: string | null;
   notes: string | null;
 };
 
@@ -216,6 +217,12 @@ export function SupplierDashboardClient() {
                       {order.readyForGifting ? <span className="text-success">Ready</span> : "Pending"}
                     </p>
                   </div>
+                  {order.releaseDate && (
+                    <div>
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground">Release Date</p>
+                      <p className="font-medium text-foreground" suppressHydrationWarning>{formatDateOnly(order.releaseDate)}</p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex flex-wrap gap-2 border-t border-glass-border pt-3">
@@ -278,6 +285,7 @@ export function SupplierDashboardClient() {
                   <TableHead>IGN</TableHead>
                   <TableHead>Price</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Release Date</TableHead>
                   <TableHead>Ready</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -295,6 +303,7 @@ export function SupplierDashboardClient() {
                         {order.status.replaceAll("_", " ")}
                       </Badge>
                     </TableCell>
+                    <TableCell suppressHydrationWarning>{order.releaseDate ? formatDateOnly(order.releaseDate) : "-"}</TableCell>
                     <TableCell>
                       {order.readyForGifting ? <Badge variant="success">Ready</Badge> : <Badge variant="warning">Pending</Badge>}
                     </TableCell>
