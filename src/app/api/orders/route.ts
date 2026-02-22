@@ -144,6 +144,7 @@ export async function POST(request: NextRequest) {
     const createdOrder = await prisma.$transaction(async (tx) => {
       const now = new Date();
       const shouldComplete = parsed.data.status === OrderStatus.COMPLETED;
+      const shouldDeduct = parsed.data.status !== OrderStatus.REFUNDED && parsed.data.status !== OrderStatus.FAILED;
 
       const order = await tx.order.create({
         data: {
@@ -159,7 +160,7 @@ export async function POST(request: NextRequest) {
           notes: parsed.data.notes,
           releaseDate: parsed.data.releaseDate,
           completedAt: shouldComplete ? now : null,
-          balanceDeductedAt: shouldComplete ? now : null,
+          balanceDeductedAt: shouldDeduct ? now : null,
         },
         include: {
           supplier: true,
@@ -173,7 +174,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      if (shouldComplete) {
+      if (shouldDeduct) {
         await tx.supplier.update({
           where: { id: parsed.data.supplierId },
           data: {
@@ -187,7 +188,7 @@ export async function POST(request: NextRequest) {
           data: {
             supplierId: parsed.data.supplierId,
             changeAmount: -parsed.data.diamondPrice,
-            reason: `Order completed: ${parsed.data.skinName}`,
+            reason: `Order assigned: ${parsed.data.skinName}`,
             orderId: order.id,
           },
         });

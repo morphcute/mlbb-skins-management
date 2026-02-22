@@ -44,8 +44,13 @@ export async function updateOrderWithBalanceEffects(params: UpdateOrderParams) {
     };
 
     const now = new Date();
-    const shouldDeduct = nextStatus === OrderStatus.COMPLETED && !order.balanceDeductedAt;
-    const shouldRefund = (nextStatus as string) === "REFUNDED" && order.balanceDeductedAt;
+    const shouldDeduct =
+      nextStatus !== OrderStatus.REFUNDED &&
+      nextStatus !== OrderStatus.FAILED &&
+      !order.balanceDeductedAt;
+    const shouldRefund =
+      (nextStatus === OrderStatus.REFUNDED || nextStatus === OrderStatus.FAILED) &&
+      order.balanceDeductedAt;
 
     if (nextStatus === OrderStatus.FOLLOWED && !order.followedAt) {
       updateData.followedAt = now;
@@ -86,7 +91,7 @@ export async function updateOrderWithBalanceEffects(params: UpdateOrderParams) {
         data: {
           supplierId: targetSupplierId,
           changeAmount: -order.diamondPrice,
-          reason: `Order completed: ${order.skinName}`,
+          reason: `Order assigned: ${order.skinName}`,
           orderId: order.id,
         },
       });
