@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  SUPPLIER
+  VIEWER
+}
+
+enum OrderStatus {
+  PENDING
+  FOLLOWED
+  READY_FOR_GIFTING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  passwordHash  String    @map("password_hash")
+  role          Role      @default(SUPPLIER)
+  supplier      Supplier?
+  assignedOrders Order[]  @relation("OrderAssignedBy")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Supplier {
+  id                  String       @id @default(cuid())
+  userId              String       @unique @map("user_id")
+  user                User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name                String
+  diamondBalance      Int          @default(0) @map("diamond_balance")
+  lowBalanceThreshold Int          @default(1000) @map("low_balance_threshold")
+  googleSheetId       String?      @map("google_sheet_id")
+  googleSyncEnabled   Boolean      @default(false) @map("google_sync_enabled")
+  orders              Order[]
+  balanceLogs         BalanceLog[]
+  createdAt           DateTime     @default(now()) @map("created_at")
+  updatedAt           DateTime     @updatedAt @map("updated_at")
+
+  @@map("suppliers")
+}
+
+model Order {
+  id                  String       @id @default(cuid())
+  mlbbId              String       @map("mlbb_id")
+  serverId            String       @map("server_id")
+  ign                 String
+  skinName            String       @map("skin_name")
+  diamondPrice        Int          @map("diamond_price")
+  supplierId          String       @map("supplier_id")
+  supplier            Supplier     @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  status              OrderStatus  @default(PENDING)
+  readyForGifting     Boolean      @default(false) @map("ready_for_gifting")
+  assignedById        String       @map("assigned_by")
+  assignedBy          User         @relation("OrderAssignedBy", fields: [assignedById], references: [id], onDelete: Restrict)
+  completedAt         DateTime?    @map("completed_at")
+  followedAt          DateTime?    @map("followed_at")
+  balanceDeductedAt   DateTime?    @map("balance_deducted_at")
+  googleSheetRowNumber Int?        @map("google_sheet_row_number")
+  notes               String?
+  balanceLogs         BalanceLog[]
+  createdAt           DateTime     @default(now()) @map("created_at")
+  updatedAt           DateTime     @updatedAt @map("updated_at")
+
+  @@index([supplierId, status])
+  @@index([status, createdAt])
+  @@map("orders")
+}
+
+model BalanceLog {
+  id           String    @id @default(cuid())
+  supplierId   String    @map("supplier_id")
+  supplier     Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  changeAmount Int       @map("change_amount")
+  reason       String
+  orderId      String?   @map("order_id")
+  order        Order?    @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  @@index([supplierId, createdAt])
+  @@map("balance_logs")
+}
